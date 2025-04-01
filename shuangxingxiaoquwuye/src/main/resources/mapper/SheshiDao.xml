@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SheshiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.sheshi_name as sheshiName
+        ,a.sheshi_number as sheshiNumber
+        ,a.sheshi_types as sheshiTypes
+        ,a.sheshi_time as sheshiTime
+        ,a.sheshi_monry as sheshiMonry
+        ,a.sheshi_content as sheshiContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.SheshiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM sheshi  a
+
+        <where>
+            <if test=" params.sheshiName != '' and params.sheshiName != null and params.sheshiName != 'null' ">
+                and a.sheshi_name like CONCAT('%',#{params.sheshiName},'%')
+            </if>
+            <if test=" params.sheshiNumber != '' and params.sheshiNumber != null and params.sheshiNumber != 'null' ">
+                and a.sheshi_number like CONCAT('%',#{params.sheshiNumber},'%')
+            </if>
+            <if test="params.sheshiTypes != null">
+                and a.sheshi_types = #{params.sheshiTypes}
+            </if>
+            <if test=" params.sheshiTimeStart != '' and params.sheshiTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.sheshi_time) >= UNIX_TIMESTAMP(#{params.sheshiTimeStart}) ]]>
+            </if>
+            <if test=" params.sheshiTimeEnd != '' and params.sheshiTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.sheshi_time) <= UNIX_TIMESTAMP(#{params.sheshiTimeEnd}) ]]>
+            </if>
+            <if test="params.sheshiMonryStart != null ">
+                <![CDATA[  and a.sheshi_monry >= #{params.sheshiMonryStart}   ]]>
+            </if>
+            <if test="params.sheshiMonryEnd != null ">
+                <![CDATA[  and a.sheshi_monry <= #{params.sheshiMonryEnd}   ]]>
+            </if>
+            <if test=" params.sheshiContent != '' and params.sheshiContent != null and params.sheshiContent != 'null' ">
+                and a.sheshi_content like CONCAT('%',#{params.sheshiContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>
